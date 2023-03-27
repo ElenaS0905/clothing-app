@@ -15,18 +15,48 @@ const addCartItem = (cartItem, productToAdd) => {
   return [...cartItem, { ...productToAdd, quantity: 1 }];
 };
 
+export const removeCartItem = (cartItems, productToRemove) => {
+  const existingCartItem = cartItems.find(
+    (cartItem) => cartItem.id === productToRemove.id
+  );
+
+  if (existingCartItem.quantity === 1) {
+    return cartItems.filter((cartItem) => cartItem.id !== productToRemove.id);
+  }
+  return cartItems.map((cartItem) =>
+    cartItem.id === productToRemove.id
+      ? { ...cartItem, quantity: cartItem.quantity - 1 }
+      : cartItem
+  );
+};
+
+export const clearCartItem = (cartItems, cartToClear) =>
+  cartItems.filter((cartItem) => cartItem.id !== cartToClear.id);
+
 export const CartContext = createContext({
   isCartOpen: false,
   setIsCartOpen: () => {},
   cartItems: [],
   addItemToCart: () => {},
+  removeItemCart: () => {},
+  clearCart: () => {},
   cartCount: 0,
+  total: 0,
 });
 
 export const CartProvider = ({ children }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [cartCount, setCartCount] = useState(0);
+  const [total, seTotal] = useState(0);
+
+  useEffect(() => {
+    const newTotal = cartItems.reduce(
+      (total, cartItem) => total + cartItem.quantity * cartItem.price,
+      0
+    );
+    seTotal(newTotal);
+  }, [cartItems]);
 
   useEffect(() => {
     const newCartCount = cartItems.reduce(
@@ -40,12 +70,23 @@ export const CartProvider = ({ children }) => {
     setCartItems(addCartItem(cartItems, productToAdd));
   };
 
+  const removeItemCart = (productToRemove) => {
+    setCartItems(removeCartItem(cartItems, productToRemove));
+  };
+
+  const clearCart = (cartToClear) => {
+    setCartItems(clearCartItem(cartItems, cartToClear));
+  };
+
   const value = {
     isCartOpen,
     setIsCartOpen,
     addItemToCart,
+    removeItemCart,
+    clearCart,
     cartItems,
     cartCount,
+    total,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
