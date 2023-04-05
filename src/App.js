@@ -1,9 +1,9 @@
 import { Routes, Route } from "react-router-dom";
 import Navigation from "./components/routs/navigation/nav-bar";
-import Home from "./components/routs/home/home.component";
+import Home from "./components/routs/home/home";
 import Authentication from "./components/routs/authentication/authentication";
-import Shop from "./components/routs/shop/shop-component";
-import Checkout from "./components/routs/checkout/checkout-component";
+import Shop from "./components/routs/shop/shop";
+import Checkout from "./components/routs/checkout/checkout";
 
 const App = () => {
   return (
